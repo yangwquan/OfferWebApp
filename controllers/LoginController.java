@@ -1,5 +1,7 @@
 package com.java.learning.mvcdatabase.controllers;
 
+import java.util.List;
+
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,9 +26,9 @@ public class LoginController {
 		this.userService = userService;
 	}
 
-	@RequestMapping("/login")
+	@RequestMapping("/login") //it it the name showing in the url address.
 	public String showLogin(){		
-		return "login";
+		return "login"; // it is the name of jsp file to be used.
 	}	
 	
 	@RequestMapping("/loggedout")
@@ -47,7 +49,7 @@ public class LoginController {
 			return "newaccount";
 		}
 		
-		user.setAuthority("user");
+		user.setAuthority("ROLE_USER");
 		user.setEnabled(true);
 		
 		if(userService.exists(user.getUsername())){
@@ -64,5 +66,19 @@ public class LoginController {
 		*/
 		userService.create(user);
 		return "accountcreated";
-	}		
+	}
+	
+	@RequestMapping("/admin")
+	public String showAdmin(Model model){		
+		
+		List <User> users=userService.getAllUsers();
+		model.addAttribute("users", users);
+		return "admin";
+	}
+	
+	@RequestMapping("/denied")
+	public String showDenied(){		
+		return "denied";
+	}	
+	
 }

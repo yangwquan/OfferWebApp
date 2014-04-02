@@ -9,19 +9,23 @@
 	<security:authentication-manager>
 		<security:authentication-provider>
 			<security:user-service>
-				<security:user name="ywq" authorities="admin"
+				<security:user name="ywq" authorities="ROLE_ADMIN"
 					password="letmein" />
-				<security:user name="john" authorities="admin"
+				<security:user name="john" authorities="ROLE_ADMIN"
 					password="letmein" />
 			</security:user-service>
 		</security:authentication-provider>
 		<security:authentication-provider>
-			<security:jdbc-user-service data-source-ref="dataSource" />
-		</security:authentication-provider>	
+			<security:jdbc-user-service data-source-ref="dataSource"
+				id="jdbcUserSevice" />
+			<security:password-encoder ref="passwordEncoder"></security:password-encoder>
+		</security:authentication-provider>
 	</security:authentication-manager>
 	
 	<security:http use-expressions="true">
-		<security:intercept-url pattern="/admin" access="hasRole('admin')" />
+		<security:intercept-url pattern="/admin" access="permitAll" />
+		<security:intercept-url pattern="/denied" access="permitAll" />
+		<!-- <security:intercept-url pattern="/admin" access="hasRole('admin')" /> -->
 		<security:intercept-url pattern="/createoffer" access="isAuthenticated()" />
 		<security:intercept-url pattern="/docreate" access="isAuthenticated()" />
 		<security:intercept-url pattern="/offercreated" access="isAuthenticated()" />
@@ -37,5 +41,12 @@
 		<security:form-login login-page="/login"
 			authentication-failure-url="/login?error=true" />
 		<security:logout logout-success-url="/loggedout" />
+		<security:access-denied-handler error-page="/denied" />
+		<security:remember-me key="loginRememberMe"
+			user-service-ref="jdbcUserSevice" />
 	</security:http>
+	<security:global-method-security secured-annotations="enabled"></security:global-method-security>
+	<bean id="passwordEncoder"
+		class="org.springframework.security.crypto.password.StandardPasswordEncoder">
+	</bean>
 </beans>
